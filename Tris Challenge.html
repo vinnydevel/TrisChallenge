@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tris</title>
+  <style>
+    body {
+      background-color: aquamarine;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      border-collapse: collapse;
+      margin: auto;
+      border-radius: 17px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      cursor: pointer;
+      background-color: red;
+      border-radius: 15px;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 7px rgba(255, 255, 255, 0.9);
+      transition: background-color 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .cell:hover {
+      background-color: darkred;
+    }
+
+    .result {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      margin-top: 7px;
+      position: relative;
+      z-index: 0;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .button {
+      font-family: 'Times New Roman', Times, serif; /* Imposta il font-family desiderato */
+      margin: 5px;
+      border-radius: 15px;
+      background-color: #FFFF99;
+      width: 90px; /* Modifica la larghezza dei bottoni */
+      height: 30px; /* Aumenta l'altezza dei bottoni */
+      font-size: 13px; /* Modifica la dimensione del font dei bottoni */
+  font-weight: bold; /* Rendi il testo dei bottoni in grassetto */
+  
+    }
+
+    .text-3d {
+      font-family: Times new roman;
+      font-size: 80px;
+      color: blue;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 7px rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 10px;
+      transform: perspective(1000px) rotateY(20deg);
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0% {
+        color: red;
+      }
+      50% {
+        color: yellow;
+      }
+      100% {
+        color: red;
+      }
+    }
+   .glow {
+  font-family: Times New Roman;
+  font-size: 80px;
+  color: blue;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 1), 
+               0 0 20px rgba(255, 255, 255, 1), 
+               0 0 30px rgba(255, 255, 255, 1), 
+               0 0 40px rgba(0, 0, 255, 0.9), 
+               0 0 70px rgba(0, 0, 255, 0.9), 
+               0 0 80px rgba(0, 0, 255, 0.9), 
+               0 0 100px rgba(0, 0, 255, 0.9), 
+               0 0 150px rgba(0, 0, 255, 0.9);
+  margin-left: -5mm; /* Sposta la scritta di 1mm verso sinistra */
+  margin-right: -4mm; /* Sposta la scritta di 1mm verso destra */
+}
+
+.board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.9), 
+                 0 0 10px rgba(255, 255, 255, 0.9), 
+                 0 0 15px rgba(0, 0, 255, 0.7), 
+                 0 0 20px rgba(0, 0, 255, 0.7), 
+                 0 0 25px rgba(0, 0, 255, 0.7), 
+                 0 0 30px rgba(0, 0, 255, 0.7), 
+                 0 0 35px rgba(0, 0, 255, 0.7);
+  }
+  to {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 1), 
+                 0 0 20px rgba(255, 255, 255, 1), 
+                 0 0 30px rgba(0, 0, 255, 1), 
+                 0 0 40px rgba(0, 0, 255, 1), 
+                 0 0 50px rgba(0, 0, 255, 1), 
+                 0 0 60px rgba(0, 0, 255, 1), 
+                 0 0 70px rgba(0, 0, 255, 1);
+  }
+}
+
+    
+#resultText {
+  font-family: 'Times New Roman', Times, serif; /* Imposta il font-family desiderato */
+  font-weight: bold;
+  font-size: 23px; /* Riduci la dimensione del font */
+  color: yellow; /* Cambia il colore del testo */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="glow" style="margin-right: -4mm;">TRIS</div>
+    <button id="singlePlayerButton" class="button blink" onclick="toggleSinglePlayer(); resetScore(); stopFlashing();">Single Player</button>
+    <button id="twoPlayersButton" class="button blink" onclick="toggleTwoPlayers(); resetScore(); stopFlashing();">Two Players</button>
+    <button id="difficultyButton" class="button" onclick="toggleDifficulty();" disabled>Easy</button>
+    <div id="startingPlayer" class="starting-player" style="font-family: 'Times New Roman', Times, serif; font-weight: bold; font-size: 24px;margin-top: 11px; color: blue;">Starts: <span id="startingPlayerIndicator">X</span></div>
+    <button id="resultButton" class="button" style="width: 230px; height: 50px; margin-top: 10px; background-color: red;">
+  <span id="resultText" style="font-weight: bold; font-size: 23px; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"></span>
+</button>
+    
+    <div class="score"></div>
+    <div id="result" class="result" style="color: blue; font-size: 23px;margin-top: 7px;"></div>
+    <div id="board" class="board">
+      <div class="cell" onclick="playerMove(0)"></div>
+      <div class="cell" onclick="playerMove(1)"></div>
+      <div class="cell" onclick="playerMove(2)"></div>
+      <div class="cell" onclick="playerMove(3)"></div>
+      <div class="cell" onclick="playerMove(4)"></div>
+      <div class="cell" onclick="playerMove(5)"></div>
+      <div class="cell" onclick="playerMove(6)"></div>
+      <div class="cell" onclick="playerMove(7)"></div>
+      <div class="cell" onclick="playerMove(8)"></div>
+    </div>
+    <div id="score" class="score" style="font-size: 21px; color: blue;">
+      <span id="playerXScore">PLAYER X: 0</span>
+      <span style="color: blue; font-size: 21px;">vs</span>
+      <span id="playerOScore">PLAYER O: 0</span>
+    </div>
+    <button id="resetScoresButton" class="button" onclick="resetScores()">Reset Scores</button>
+    <button id="resetButton" class="button" onclick="resetGame()" disabled>ResetGame</button>
+
+    <div class="dropdown" onclick="toggleDropdown()" style="margin-top: 20px;">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="dropdown-content" id="dropdownContent">
+        <a href="https://www.freeprivacypolicy.com/live/ea0eb88a-b521-4708-87b0-95c31ea386a9" target="_blank">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const gameBoard = document.getElementById('board');
+    const gameResult = document.getElementById('result');
+    const gameScore = document.getElementById('score');
+    let currentPlayer = 'X';
+    let moves = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = false;
+    let playerXScore = 0;
+    let playerOScore = 0;
+    let singlePlayerMode = false;
+    let aiThinking = false;
+    let difficulty = 'easy';
+
+    function toggleSinglePlayer() {
+      singlePlayerMode = true;
+      document.getElementById('singlePlayerButton').disabled = true;
+      document.getElementById('twoPlayersButton').disabled = false;
+      document.getElementById('resetButton').disabled = false;
+      document.getElementById('difficultyButton').disabled = false;
+  
+      resetGame();
+      resetScore();
+    }
+
+     function toggleTwoPlayers() {
+      singlePlayerMode = false;
+      document.getElementById('singlePlayerButton').disabled = false;
+      document.getElementById('twoPlayersButton').disabled = true;
+      document.getElementById('resetButton').disabled = false;
+      document.getElementById('difficultyButton').disabled = true;
+
+      resetGame();
+      resetScore();
+    }
+
+    function toggleDifficulty() {
+      if (gameActive) {
+        resetGame();
+        resetScores();
+      }
+      resetScores(); // Reimposta lo score quando si cambia la difficoltà
+      resetGame(); // Riavvia il gioco quando si cambia la difficoltà
+      difficulty = difficulty === 'easy' ? 'hard' : 'easy';
+      document.getElementById('difficultyButton').textContent = difficulty === 'easy' ? 'Easy' : 'Hard';
+    }
+
+    function playerMove(index) {
+      if (gameActive && !aiThinking && moves[index] === '') {
+        moves[index] = currentPlayer;
+        drawBoard();
+        checkWinner();
+        if (singlePlayerMode && currentPlayer === 'X' && gameActive) {
+          aiThinking = true;
+          setTimeout(makeAIMove, 500);
+        }
+        togglePlayer();
+      }
+    }
+
+    function togglePlayer() {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    function drawBoard() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach((cell, index) => {
+        cell.innerText = moves[index];
+      });
+    }
+
+    function checkWinner() {
+      const winningConditions = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+      let winner = null;
+      winningConditions.forEach(condition => {
+        const [a, b, c] = condition;
+        if (moves[a] && moves[a] === moves[b] && moves[a] === moves[c]) {
+          winner = moves[a];
+          gameActive = false;
+          highlightWinningCells(condition);
+        }
+      });
+      if (!moves.includes('') && gameActive) {
+        document.getElementById('resultText').innerText = "It's a draw!";
+        gameActive = false;
+        document.getElementById('resetButton').classList.add('blink'); // Aggiungi la classe blink
+      }
+      if (winner) {
+        document.getElementById('resultText').innerText = `Player ${winner} wins!`;
+        if (winner === 'X') {
+          playerXScore++;
+        } else {
+          playerOScore++;
+        }
+        updateScore();
+        document.getElementById('resetButton').classList.add('blink'); // Aggiungi la classe blink
+      }
+    }
+
+    function highlightWinningCells(cells) {
+      cells.forEach(cell => {
+        document.querySelector(`.cell:nth-child(${cell + 1})`).style.backgroundColor = 'yellow';
+      });
+    }
+
+    let humanStarts = true; // Aggiungi questa variabile booleana
+    
+    function resetGame() {
+      currentPlayer = humanStarts ? 'X' : 'O';
+      moves = ['', '', '', '', '', '', '', '', ''];
+      gameActive = true;
+      document.getElementById('resultText').innerText = '';
+      drawBoard();
+      resetCellBackground();
+      updateScore();
+      document.getElementById('resetButton').classList.remove('blink'); // Rimuovi la classe blink all'inizio del gioco
+      if (singlePlayerMode && !humanStarts) {
+        setTimeout(makeAIMove, 500);
+      }
+      humanStarts = !humanStarts;
+      document.getElementById('startingPlayerIndicator').textContent = currentPlayer;
+    }
+
+    function resetScores() {
+      playerXScore = 0;
+      playerOScore = 0;
+      updateScore();
+    }
+
+    function resetCellBackground() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        cell.style.backgroundColor = 'red';
+      });
+    }
+
+    function updateScore() {
+      const playerXScoreElement = document.getElementById('playerXScore');
+      const playerOScoreElement = document.getElementById('playerOScore');
+      playerXScoreElement.textContent = `PLAYER X: ${playerXScore}`;
+      playerOScoreElement.textContent = `PLAYER O: ${playerOScore}`;
+    }
+
+    function makeAIMove() {
+      if (singlePlayerMode && currentPlayer === 'O' && gameActive) {
+        let bestScore = -Infinity;
+        let bestMove;
+        if (difficulty === 'easy') {
+          const emptyCells = moves.reduce((acc, val, index) => (val === '' ? acc.concat(index) : acc), []);
+          bestMove = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        } else {
+          for (let i = 0; i < moves.length; i++) {
+            if (moves[i] === '') {
+              moves[i] = 'O';
+              let score = minimax(moves, 0, false);
+              moves[i] = '';
+              if (score > bestScore) {
+                bestScore = score;
+                bestMove = i;
+              }
+            }
+          }
+        }
+        moves[bestMove] = 'O';
+        drawBoard();
+        checkWinner();
+        togglePlayer();
+        aiThinking = false;
+      }
+    }
+
+    function minimax(board, depth, isMaximizing) {
+      let result = checkResult(board);
+      if (result !== null) {
+        return result;
+      }
+      if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < board.length; i++) {
+          if (board[i] === '') {
+            board[i] = 'O';
+            let score = minimax(board, depth + 1, false);
+            board[i] = '';
+            bestScore = Math.max(score, bestScore);
+          }
+        }
+        return bestScore;
+      } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < board.length; i++) {
+          if (board[i] === '') {
+            board[i] = 'X';
+            let score = minimax(board, depth + 1, true);
+            board[i] = '';
+            bestScore = Math.min(score, bestScore);
+          }
+        }
+        return bestScore;
+      }
+    }
+
+    function checkResult(board) {
+      const winningConditions = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+      for (let condition of winningConditions) {
+        const [a, b, c] = condition;
+        if (board[a] !== '' && board[a] === board[b] && board[a] === board[c]) {
+          return board[a] === 'X' ? -1 : 1;
+        }
+      }
+      if (!board.includes('')) {
+        return 0;
+      }
+      return null;
+    }
+
+    function resetScore() {
+      playerXScore = 0;
+      playerOScore = 0;
+      updateScore();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('resetButton').classList.remove('blink');
+    });
+    
+    function stopFlashing() {
+      document.getElementById('singlePlayerButton').classList.remove('blink');
+      document.getElementById('twoPlayersButton').classList.remove('blink');
+    }
+  </script>
+
+</body>
+
+</html>
